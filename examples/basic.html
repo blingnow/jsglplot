@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="user-scalable=no" />
+    <title>jsglplot - basic example</title>
+    <style>
+        .xtick {
+            transform: translate(-50%, calc(100% + 5px));
+        }
+
+        .ytick {
+            transform: translate(calc(-100% - 10px), 50%);
+        }
+
+        .xlabel {
+            transform-origin: center;
+            transform: translate(-50%, 0)
+        }
+
+        .ylabel {
+            transform-origin: center;
+            transform: translate(-50%, -50%) rotate(-90deg) translate(0, 50%);
+        }
+
+        html,
+        body {
+            width: 100%;
+            margin: 0px;
+            font: 16px sans-serif;
+            background-color: #fff;
+
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/3.4.2/gl-matrix-min.js"></script>
+    <script src="../jsglplot.js"></script>
+</head>
+
+<body>
+    <div id="plot" style="position: relative; width: 100%;"></div>
+</body>
+
+<footer>
+    <script>
+        const data1 = [];
+        for (let i=0; i<=10; i++) data1.push([i,Math.random() * 5])
+            const data2 = [];
+            for (let i = 0; i <= 10; i++) data2.push([i, Math.random() * 5])
+
+        const plot = new jsglplot.Plot("#plot",
+            {
+                data: {
+                    d1: {
+                        data: data1,
+                        xaxis: "x",
+                        yaxis: "y",
+                        materials: {
+                            lineSolid: {
+                                width: 1,
+                                color: [0, 0.2, 0.4, 1]
+                            }
+                        }
+                    },
+                    d2: {
+                        data: data2,
+                        xaxis: "x",
+                        yaxis: "y",
+                        materials: {
+                            lineSolid: {
+                                width: 5,
+                                color: [0.7, 0, 0, 1]
+                            }
+                        }
+                    }
+                },
+                axes: {
+                    x: {
+                        xy: 'x',
+                        ticks: {
+                            labels: true,
+                            classes: "xtick",
+                        },
+                        materials: {
+                            lineSolid: {
+                                width: 1.5,
+                                color: [0, 0, 0, 1]
+                            }
+                        },
+                        label: {
+                            text: "x axis",
+                            classes: "xlabel",
+                        }
+                    },
+                    y: {
+                        min: 0,
+                        max: 5,
+                        xy: 'y',
+                        ticks: {
+                            labels: true,
+                            classes: "ytick",
+                        },
+                        materials: {
+                            lineSolid: {
+                                width: 1.5,
+                                color: [0, 0, 0, 1]
+                            }
+                        },
+                        label: {
+                            text: "y axis",
+                            classes: "ylabel",
+                        }
+                    },
+                },
+                options: {
+                    aspect: 2,
+                    margins: {
+                        left: 100,
+                        right: 100,
+                        top: 50,
+                        bottom: 80
+                    },
+                }
+            }
+        );
+
+    </script>
+</footer>
+
+</html>
