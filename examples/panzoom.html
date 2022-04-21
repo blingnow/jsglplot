@@ -83,6 +83,16 @@
                 axes: {
                     x: {
                         xy: 'x',
+                        min: 0,
+                        max: 10,
+                        pan: {
+                            min: -5,
+                            max: 15,
+                        },
+                        zoom: {
+                            minRange: 1,
+                            maxRange: 20,
+                        },
                         ticks: {
                             labels: true,
                             classes: "xtick",
@@ -96,12 +106,20 @@
                         label: {
                             text: "x axis",
                             classes: "xlabel",
-                        }
+                        },
                     },
                     y: {
                         xy: 'y',
                         min: 0,
                         max: 5,
+                        pan: {
+                            min: 0,
+                            max: 10,
+                        },
+                        zoom: {
+                            minRange: 1,
+                            maxRange: 10,
+                        },
                         ticks: {
                             labels: true,
                             classes: "ytick",
@@ -115,7 +133,7 @@
                         label: {
                             text: "y axis",
                             classes: "ylabel",
-                        }
+                        },
                     },
                 },
                 options: {

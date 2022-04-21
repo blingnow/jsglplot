@@ -1,3 +1,4 @@
+// jsglplot -- Copyright(c) 2022 Benjamin Lingnau
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
         typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -424,11 +425,15 @@
                 return null;
             }
 
-            this.axes = config.axes || {}
-            this.data = config.data || {}
+            this.axes = config.axes || {};
+            this.data = config.data || {};
 
-            this.options = config.options || {}
-            this.options.margins = this.options.margins || { left: 0, right: 0, top: 0, bottom: 0 }
+            this.options = config.options || {};
+            this.options.margins = this.options.margins || { left: 0, right: 0, top: 0, bottom: 0 };
+            this.options.margins.left = this.options.margins.left || 0;
+            this.options.margins.right = this.options.margins.right || 0;
+            this.options.margins.top = this.options.margins.top || 0;
+            this.options.margins.bottom = this.options.margins.bottom || 0;
 
             this.materials = config.materials || {};
             this.materials.fill = new Material(this.gl, vsAreaSolid, fsAreaSolid, ["position"], generateAreaBuffers, { color: [0, 0.25, 0.75, 0.5], baseline: 0 });
@@ -449,46 +454,54 @@
                     ev.preventDefault();
                 });
 
-            var mc = new Hammer.Manager(this.inputDiv.node());
-            var pan = new Hammer.Pan();
-            var pinch = new Hammer.Pinch();
-            pan.recognizeWith(pinch);
-            mc.add([pan, pinch]);
+            let pannable = false;
+            for (let ax in this.axes) {
+                if (this.axes[ax].pan || this.axes[ax].zoom) {
+                    pannable = true;
+                    break;
+                }
+            }
 
-            mc.on("pinchstart", function (ev) {
-                thisplot.#lastzoom = 1;
-                thisplot.#lastPinchx = ev.center.x;
-                thisplot.#lastPinchy = ev.center.y;
-            });
+            if (pannable) {
+                this.mc = new Hammer.Manager(this.inputDiv.node());
+                var pan = new Hammer.Pan();
+                var pinch = new Hammer.Pinch();
+                pan.recognizeWith(pinch);
+                this.mc.add([pan, pinch]);
 
-            mc.on("pinch", function (ev) {
-                thisplot.zoom(1 / (ev.scale / thisplot.#lastzoom), ev.center.x, ev.center.y);
-                thisplot.#lastzoom = ev.scale;
-            });
+                this.mc.on("pinchstart", function (ev) {
+                    thisplot.#lastzoom = 1;
+                    thisplot.#lastPinchx = ev.center.x;
+                    thisplot.#lastPinchy = ev.center.y;
+                });
 
-            mc.on("pinchmove", function (ev) {
-                thisplot.pan(ev.center.x - thisplot.#lastPinchx, ev.center.y - thisplot.#lastPinchy);
-                thisplot.#lastPinchx = ev.center.x;
-                thisplot.#lastPinchy = ev.center.y;
-                thisplot.#lastPanx -= ev.center.x - thisplot.#lastPinchx;
-                thisplot.#lastPany -= ev.center.y - thisplot.#lastPinchy;
-                // d3.select("#debug").text("pinchmove");
-            });
+                this.mc.on("pinch", function (ev) {
+                    thisplot.zoom(1 / (ev.scale / thisplot.#lastzoom), ev.center.x, ev.center.y);
+                    thisplot.#lastzoom = ev.scale;
+                });
 
-            mc.on("panstart", function (ev) {
-                thisplot.#lastPanx = ev.deltaX;
-                thisplot.#lastPany = ev.deltaY;
-                // d3.select("#debug").text("panstart");
-            });
+                this.mc.on("pinchmove", function (ev) {
+                    thisplot.pan(ev.center.x - thisplot.#lastPinchx, ev.center.y - thisplot.#lastPinchy);
+                    thisplot.#lastPinchx = ev.center.x;
+                    thisplot.#lastPinchy = ev.center.y;
+                    thisplot.#lastPanx -= ev.center.x - thisplot.#lastPinchx;
+                    thisplot.#lastPany -= ev.center.y - thisplot.#lastPinchy;
+                    // d3.select("#debug").text("pinchmove");
+                });
 
-            mc.on("pan", function (ev) {
-                thisplot.pan(ev.deltaX - thisplot.#lastPanx, ev.deltaY - thisplot.#lastPany);
-                thisplot.#lastPanx = ev.deltaX;
-                thisplot.#lastPany = ev.deltaY;
-                // d3.select("#debug").text(ev.deltaX);
-            });
+                this.mc.on("panstart", function (ev) {
+                    thisplot.#lastPanx = ev.deltaX;
+                    thisplot.#lastPany = ev.deltaY;
+                    // d3.select("#debug").text("panstart");
+                });
 
-            this.mc = mc;
+                this.mc.on("pan", function (ev) {
+                    thisplot.pan(ev.deltaX - thisplot.#lastPanx, ev.deltaY - thisplot.#lastPany);
+                    thisplot.#lastPanx = ev.deltaX;
+                    thisplot.#lastPany = ev.deltaY;
+                    // d3.select("#debug").text(ev.deltaX);
+                });
+            }
 
             //       data, axes, labels, dimensions
             this.update(true, true, true, true);
@@ -567,8 +580,14 @@
             let rect = this.root.getBoundingClientRect();
 
             if (this.options.aspect) {
-                rect.height = (rect.width / this.options.aspect);
-                this.root.style.height = rect.height + "px";
+                if (this.options.aspect < 0) {
+                    rect.width = -(rect.height * this.options.aspect);
+                    this.root.style.width = rect.width + "px";
+                }
+                else {
+                    rect.height = (rect.width / this.options.aspect);
+                    this.root.style.height = rect.height + "px";
+                }
             }
 
             this.dimensions.width = rect.width - this.options.margins.right - this.options.margins.left;
@@ -797,11 +816,11 @@
                 axis.min += dy * facy;
                 axis.max += dy * facy;
             }
-            if (axis.pan.max && axis.max > axis.pan.max) {
+            if (typeof(axis.pan.max) == "number" && axis.max > axis.pan.max) {
                 axis.min += axis.pan.max - axis.max;
                 axis.max += axis.pan.max - axis.max;
             }
-            if (axis.pan.min && axis.min < axis.pan.min) {
+            if (typeof (axis.pan.min) == "number" && axis.min < axis.pan.min) {
                 axis.max += axis.pan.min - axis.min;
                 axis.min += axis.pan.min - axis.min;
             }

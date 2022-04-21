@@ -59,8 +59,8 @@
                 data: {
                     d1: {
                         data: data1,
-                        xaxis: "x",
-                        yaxis: "y",
+                        xaxis: "xMajor",
+                        yaxis: "yMajor",
                         materials: {
                             lineSolid: {
                                 width: 1,
@@ -70,8 +70,8 @@
                     },
                     d2: {
                         data: data2,
-                        xaxis: "x",
-                        yaxis: "y",
+                        xaxis: "xMajor",
+                        yaxis: "yMajor",
                         materials: {
                             lineSolid: {
                                 width: 5,
@@ -81,11 +81,12 @@
                     }
                 },
                 axes: {
-                    x: {
+                    xMajor: {
                         xy: 'x',
                         ticks: {
                             labels: true,
                             classes: "xtick",
+                            tickNumber: 12,
                         },
                         materials: {
                             lineSolid: {
@@ -96,15 +97,37 @@
                         label: {
                             text: "x axis",
                             classes: "xlabel",
+                        },
+                        grid: {
+                            lineSolid: {
+                                width: 0.5,
+                                color: [0, 0, 0, 0.6]
+                            }
+                        },
+                        pan: {},
+                        zoom: {},
+                    },
+                    xMinor: {
+                        xy: 'x',
+                        linkAxis: 'xMajor',
+                        ticks: {
+                            tickNumber: 48,
+                        },
+                        grid: {
+                            lineDashed: {
+                                width: 0.5,
+                                color: [0, 0, 0, 0.4]
+                            }
                         }
                     },
-                    y: {
+                    yMajor: {
                         xy: 'y',
                         min: 0,
                         max: 5,
                         ticks: {
                             labels: true,
                             classes: "ytick",
+                            tickNumber: 6,
                         },
                         materials: {
                             lineSolid: {
@@ -115,6 +138,27 @@
                         label: {
                             text: "y axis",
                             classes: "ylabel",
+                        },
+                        grid: {
+                            lineSolid: {
+                                width: 0.5,
+                                color: [0, 0, 0, 0.5]
+                            }
+                        },
+                        pan: {},
+                        zoom: {},
+                    },
+                    yMinor: {
+                        xy: 'y',
+                        linkAxis: 'yMajor',
+                        ticks: {
+                            tickNumber: 24,
+                        },
+                        grid: {
+                            lineDashed: {
+                                width: 0.5,
+                                color: [0, 0, 0, 0.4]
+                            }
                         }
                     },
                 },

@@ -83,6 +83,12 @@
                 axes: {
                     x: {
                         xy: 'x',
+                        min: 0,
+                        max: 10,
+                        pan: {
+                            min: -5,
+                            max: 15,
+                        },
                         ticks: {
                             labels: true,
                             classes: "xtick",
@@ -102,6 +108,10 @@
                         xy: 'y',
                         min: 0,
                         max: 5,
+                        pan: {
+                            min: 0,
+                            max: 10,
+                        },
                         ticks: {
                             labels: true,
                             classes: "ytick",
